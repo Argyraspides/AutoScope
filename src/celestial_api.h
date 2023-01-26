@@ -7,15 +7,18 @@
 
 struct QUERY_STRING {
 public:
+
+    int step_size = 20;
+    // Horizons API "base" link
     std::string link = "https://ssd.jpl.nasa.gov/api/horizons.api?";
-    std::string format = "format=text";
-    std::string command = "COMMAND='5'";
-    std::string center = "CENTER='@sun'";
+    std::string format = "format=text"; // Get data as .txt
+    std::string command = "COMMAND='5'"; // Specifies planet.
+    std::string center = "CENTER='@sun'"; // Gives center of the 
     std::string reference_plane = "REF_PLANE='ECLIPTIC'";
     std::string coord_type = "COORD_TYPE='CYLINDRICAL'";
-    std::string start_time = "START_TIME='2022-01-01";
-    std::string stop_time = "STOP_TIME='2022-01-02'";
-    std::string quantities = "QUANTITIES='1,20'";
+    std::string start_time = "START_TIME='2023-01-01";
+    std::string stop_time = "STOP_TIME='2023-01-02'";
+    std::string quantities = "QUANTITIES='1," + std::to_string(step_size) + "'";
 
     std::vector<std::string> query_parameters{ 
         format,

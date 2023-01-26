@@ -9,9 +9,20 @@ int main()
     std::ostringstream os;
 
     QUERY_STRING query_string;
+    query_string.step_size = 20; 
     query_string.constructQueryString();
 
     os << curlpp::options::Url(std::string(query_string.link));
-    std::string CELESTIAL_DATA = os.str();
-    std::cout << CELESTIAL_DATA;
+
+    std::string api_response = os.str();
+    std::string start_delimiter = "$$SOE";
+    std::string end_delimiter = "$$EOE";
+
+    unsigned first = api_response.find(start_delimiter) + start_delimiter.length() + 1;
+    unsigned last = api_response.find(end_delimiter) - end_delimiter.length() - 1;
+
+    std::string celestial_data = api_response.substr(first, last - first);
+
+    std::cout << celestial_data << std::endl;
+
 }
