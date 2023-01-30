@@ -9,10 +9,10 @@ int main()
     std::ostringstream os;
 
     QUERY_STRING query_string;
-    query_string.step_size = 20; 
-    query_string.constructQueryString();
+    query_string.horizons.step_size = 20; 
+    query_string.horizons.constructQueryString();
 
-    os << curlpp::options::Url(std::string(query_string.link));
+    os << curlpp::options::Url(std::string(query_string.horizons.link));
 
     std::string api_response = os.str();
     std::string start_delimiter = "$$SOE";
@@ -24,5 +24,5 @@ int main()
     std::string celestial_data = api_response.substr(first, last - first);
 
     std::cout << celestial_data << std::endl;
-
 }
+
