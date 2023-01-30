@@ -1,7 +1,7 @@
 [
 {
   "directory": "/home/granicus/Desktop/celesital_api/build",
-  "command": "/usr/bin/g++  -I/home/granicus/Desktop/celesital_api/curlpp/include -O3 -DNDEBUG -o CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o -c /home/granicus/Desktop/celesital_api/src/celestial_api.cpp",
+  "command": "/usr/bin/g++  -I/home/granicus/Desktop/celesital_api/curlpp/include -isystem /usr/include/jsoncpp -O3 -DNDEBUG -o CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o -c /home/granicus/Desktop/celesital_api/src/celestial_api.cpp",
   "file": "/home/granicus/Desktop/celesital_api/src/celestial_api.cpp"
 },
 {

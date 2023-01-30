@@ -99,6 +99,7 @@ celestial_api_EXTERNAL_OBJECTS =
 celestial_api: CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o
 celestial_api: CMakeFiles/celestial_api.dir/build.make
 celestial_api: curlpp/libcurlpp.so.1.0.0
+celestial_api: /usr/lib/i386-linux-gnu/libjsoncpp.so.1.9.4
 celestial_api: /usr/lib/i386-linux-gnu/libcurl.so
 celestial_api: CMakeFiles/celestial_api.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/granicus/Desktop/celesital_api/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable celestial_api"
