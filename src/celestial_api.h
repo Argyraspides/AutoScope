@@ -108,16 +108,13 @@ public:
     struct gps_coord
     {
         float latitude = 0.0f, longitude = 0.0f;
-    }
-};
-
-struct MATH
-{
+    };
 
     horiz_coord equatToHoriz(
         const equat_coord &eq_coo,
         const gps_coord &gps_coo,
-        const float &GMST const float &altitude)
+        const float &GMST,
+        const float &elevation)
     {
         // GMST given in degrees
         float local_sidereal_time = GMST + gps_coo.longitude;
@@ -137,7 +134,7 @@ struct MATH
         // Our correction factor for elevation above sea level
         float local_hour_angle = GMST + gps_coo.longitude - eq_coo.right_ascension_degrees;
         float correction_factor =
-            1.0f / (cos(altitude) * cos(gps_coo.latitude) * cos(local_hour_angle) +
+            1.0f / (cos(elevation) * cos(gps_coo.latitude) * cos(local_hour_angle) +
                     sin(gps_coo.latitude) * sin(eq_coo.declination));
 
         altitude *= correction_factor;
@@ -150,6 +147,7 @@ struct MATH
         return horizontal_coordinates;
     }
 };
+
 
 struct EARTH
 {

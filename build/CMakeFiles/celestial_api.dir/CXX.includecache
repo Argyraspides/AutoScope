@@ -165,6 +165,8 @@ ctime
 -
 sstream
 -
+cmath
+-
 curlpp/cURLpp.hpp
 -
 curlpp/Options.hpp
