@@ -79,15 +79,15 @@ include CMakeFiles/celestial_api.dir/flags.make
 CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o: CMakeFiles/celestial_api.dir/flags.make
 CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o: ../src/celestial_api.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/granicus/Desktop/celesital_api/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o -c /home/granicus/Desktop/celesital_api/src/celestial_api.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o -c /home/granicus/Desktop/celesital_api/src/celestial_api.cpp
 
 CMakeFiles/celestial_api.dir/src/celestial_api.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/celestial_api.dir/src/celestial_api.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/granicus/Desktop/celesital_api/src/celestial_api.cpp > CMakeFiles/celestial_api.dir/src/celestial_api.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/granicus/Desktop/celesital_api/src/celestial_api.cpp > CMakeFiles/celestial_api.dir/src/celestial_api.cpp.i
 
 CMakeFiles/celestial_api.dir/src/celestial_api.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/celestial_api.dir/src/celestial_api.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/granicus/Desktop/celesital_api/src/celestial_api.cpp -o CMakeFiles/celestial_api.dir/src/celestial_api.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/granicus/Desktop/celesital_api/src/celestial_api.cpp -o CMakeFiles/celestial_api.dir/src/celestial_api.cpp.s
 
 # Object files for target celestial_api
 celestial_api_OBJECTS = \

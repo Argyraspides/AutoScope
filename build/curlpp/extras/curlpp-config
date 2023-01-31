@@ -43,7 +43,7 @@ while test $# -gt 0; do
 
     case "$1" in
     --cc)
-	echo /usr/bin/gcc
+	echo /usr/bin/cc
 	;;
 
     --prefix)
