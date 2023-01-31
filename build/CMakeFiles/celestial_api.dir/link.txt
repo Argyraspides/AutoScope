@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/celestial_api.dir/src/celestial_api.cpp.o -o celestial_api  -Wl,-rpath,/home/granicus/Desktop/celesital_api/build/curlpp curlpp/libcurlpp.so.1.0.0 /usr/lib/i386-linux-gnu/libjsoncpp.so.1.9.4 /usr/lib/i386-linux-gnu/libcurl.so 
