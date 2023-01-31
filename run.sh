@@ -1,6 +1,2 @@
-cd build
-cmake ../
-cd ..
-cmake --build build
-cd build
-./celestial_api
+cd build # enter build directory
+./celestial_api # run 
