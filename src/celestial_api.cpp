@@ -24,6 +24,7 @@ void focusPlanet(const std::string &planet)
 
 equat_coord getPlanetPosition(const std::string &planet)
 {
+
     log("OBTAINING PLANET POSITION");
     // Represents the final responses of the API. JPL Horizons returns in .txt format.
     std::ostringstream horizon_response;
@@ -34,11 +35,15 @@ equat_coord getPlanetPosition(const std::string &planet)
 
     log("GETTING CURRENT TIME ...");
     // Obtain the current time as "YYYY-MM-DD HH:MM:SS" for the API:
-    std::time_t time = std::time(nullptr);
-    std::tm tm = *std::localtime(&time);
+    // Get the local time
+    auto now = std::chrono::system_clock::now();
+    // Convert to time_t object
+    std::time_t time = std::chrono::system_clock::to_time_t(now);
+    // Convert to tm struct, in UTC time.
+    std::tm tm = *std::gmtime(&time);
     // API Demands an end time that has to be greater than the start time, we will just add 60 seconds.
     time += 60;
-    std::tm tm_end = *std::localtime(&time);
+    std::tm tm_end = *std::gmtime(&time);
 
     std::ostringstream oss, oss_end;
     // Set format "YYYY-MM-DD HH:MM:SS" for start and end times.
@@ -52,6 +57,7 @@ equat_coord getPlanetPosition(const std::string &planet)
     query_string.stop_time = oss_end.str();
     query_string.planet = planet;
     query_string.constructQueryString();
+    log("\nQUERY STRING: " + query_string.link + "\n");
 
     // Call NASA's JPL Horizons API for planetary positional data, put into horizons_response.
     log("CALLING HORIZONS API ...");
@@ -78,21 +84,21 @@ equat_coord getPlanetPosition(const std::string &planet)
     final_coordinates.right_ascension[2] = std::stof(celestial_data.substr(32, 36));
 
     // Given as minutes by Horizons API.
-    float sign = (std::stof(celestial_data.substr(38, 38))) < 0 ? -1 : 1;
 
-    float degrees = final_coordinates.declination = std::stof(celestial_data.substr(39, 40));
+    float degrees = final_coordinates.declination = std::stof(celestial_data.substr(38, 40));
+    float sign = (degrees < 0) ? -1 : 1;
     float minutes = final_coordinates.declination = std::stof(celestial_data.substr(41, 42));
     float seconds = final_coordinates.declination = std::stof(celestial_data.substr(44, 47));
-    final_coordinates.declination = sign * (degrees + minutes / 60.0f + seconds / 3600.0f);
+    final_coordinates.declination = sign * (abs(degrees) + minutes / 60.0f + seconds / 3600.0f);
 
     // Right ascension given as HH:MM:SS. Updates the separate degree value variable.
     final_coordinates.update();
 
     log("SUCCESSFULLY OBTAINED PLANETARY DATA IN EQUATORIAL COORDINATES");
     log("PLANET: " + planet + ", COORDINATES:\nR.A. " +
-        std::to_string(final_coordinates.right_ascension[0]) + "H:" +
-        std::to_string(final_coordinates.right_ascension[1]) + "M:" +
-        std::to_string(final_coordinates.right_ascension[2]) + "S:" + "\nDEC: " +
+        std::to_string(final_coordinates.right_ascension[0]).substr(0, 5) + "H:" +
+        std::to_string(final_coordinates.right_ascension[1]).substr(0, 5) + "M:" +
+        std::to_string(final_coordinates.right_ascension[2]).substr(0, 5) + "S:" + "\nDEC: " +
         std::to_string(final_coordinates.declination));
 
     return final_coordinates;
