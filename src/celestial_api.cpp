@@ -8,10 +8,12 @@ using namespace std::chrono;
 void track();
 void focusPlanet();
 equat_coord getPlanetPosition(const std::string &planet);
+float getGMST();
 
 int main()
 {
     equat_coord c = getPlanetPosition(SATURN);
+    float x = getGMST();
 }
 
 void track()
@@ -25,7 +27,7 @@ void focusPlanet(const std::string &planet)
 equat_coord getPlanetPosition(const std::string &planet)
 {
 
-    log("OBTAINING PLANET POSITION");
+    log("\nOBTAINING PLANET POSITION");
     // Represents the final responses of the API. JPL Horizons returns in .txt format.
     std::ostringstream horizon_response;
     equat_coord final_coordinates;
@@ -50,7 +52,7 @@ equat_coord getPlanetPosition(const std::string &planet)
     // the space character is represented by "%20" for the URL later.
     oss << std::put_time(&tm, "%Y-%m-%d%20%H:%M:%S");
     log("CURRENT TIME: " + oss.str().substr(0, 10) + ", " + oss.str().substr(13, 21) + " UT");
-    oss_end << std::put_time(&tm_end, "%Y-%m-%d%20%H-%M-%S");
+    oss_end << std::put_time(&tm_end, "%Y-%m-%d%20%H:%M:%S");
 
     // Set query string parameters and construct the string
     query_string.start_time = oss.str();
@@ -106,12 +108,33 @@ equat_coord getPlanetPosition(const std::string &planet)
 
 float getGMST()
 {
-
+    log("\nOBTAINING GMST ...");
     usno_query_string query_string;
-
     std::string usno_response;
 
+    log("GETTING CURRENT TIME ...");
+    // Obtain the current time as "YYYY-MM-DD HH:MM:SS" for the API:
+    // Get the local time
+    auto now = std::chrono::system_clock::now();
+    // Convert to time_t object
+    std::time_t time = std::chrono::system_clock::to_time_t(now);
+    // Convert to tm struct, in UTC time.
+    std::tm tm = *std::gmtime(&time);
+
+    // String streams for our date and time
+    std::ostringstream oss_date, oss_time;
+
+    // Set format "YYYY-MM-DD HH:MM:SS" for start and end times.
+    oss_date << std::put_time(&tm, "%Y-%m-%d");
+    oss_time << std::put_time(&tm, "%H:%M:%S");
+    // Into the query_string as an std::string
+    query_string.startDate = oss_date.str();
+    query_string.startTime = oss_time.str();
+
+    query_string.constructQueryString();
+
     // USNO Returns as a JSON, so we configure curlpp to take json replies
+    log("REQUESTING USNO API ...");
     curlpp::Easy request;
     request.setOpt(curlpp::options::Url(query_string.link));
     request.setOpt(curlpp::options::HttpHeader({"Accept: application/json"}));
@@ -123,11 +146,28 @@ float getGMST()
 
     // API call.
     request.perform();
+    log("SUCCESSFULLY RETRIEVED API\nPARSING DATA");
 
     Json::Value json_response;
     Json::Reader reader;
-    // Convert to JSONPP json object.
+    // Parse API response to json object.
     reader.parse(usno_response, json_response);
+
+    // Extract GMST from response.
+    std::string gmst = json_response["properties"]["data"][0]["gmst"].asString();
+
+    // Return GMST in degrees.
+    float hours = std::stof(gmst.substr(0, 1));
+    float minutes = std::stof(gmst.substr(3, 4));
+    float seconds = std::stof(gmst.substr(6, 10));
+    log("GMST RETRIEVAL COMPLETE");
+    log("CURRENT GMST: " + gmst);
+
+    return (15.0f * hours + minutes / 4.0f + seconds / 240.0f);
+}
+
+std::string getCurrentDateAndTime()
+{
 }
 
 // For timing

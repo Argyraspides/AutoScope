@@ -22,8 +22,6 @@
 #define PLUTO "9"
 #define MOON "10"
 
-
-
 struct horizons_query_string
 {
     int step_size = 20;
@@ -66,8 +64,8 @@ struct usno_query_string
     std::vector<std::string> keyWords = {"date=", "coords=", "reps=", "intv_mag=", "intv_unit=", "time="};
     std::string startDate = "2020-03-04";
     std::string coords = "41.89,12.48";
-    std::string increments = "90";
-    std::string incrementSize = "5";
+    std::string increments = "1";
+    std::string incrementSize = "1";
     std::string incrementUnits = "minutes";
     std::string startTime = "21:00:00";
 
