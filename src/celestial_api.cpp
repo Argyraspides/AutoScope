@@ -1,13 +1,5 @@
 #include "celestial_api.h"
-#include <chrono>
-#include <ctime>
-#include <iomanip>
 #define log(x) std::cout << x << "\n"
-
-void track();
-void focusPlanet(const std::string &planet);
-equat_coord getPlanetPosition(const std::string &planet);
-float getGMST();
 
 // Frequency of tracking an object, given in milliseconds.
 const int tracking_frequency = 20000;
@@ -108,25 +100,22 @@ equat_coord getPlanetPosition(const std::string &planet)
     log("GETTING CURRENT TIME ...");
     // Obtain the current time as "YYYY-MM-DD HH:MM:SS" for the API:
     // Get the local time
-    auto now = std::chrono::system_clock::now();
-    // Convert to time_t object
-    std::time_t time = std::chrono::system_clock::to_time_t(now);
-    // Convert to tm struct, in UTC time.
-    std::tm tm = *std::gmtime(&time);
-    // API Demands an end time that has to be greater than the start time, we will just add 60 seconds.
-    time += 60;
-    std::tm tm_end = *std::gmtime(&time);
 
-    std::ostringstream oss, oss_end;
-    // Set format "YYYY-MM-DD HH:MM:SS" for start and end times.
-    // the space character is represented by "%20" for the URL later.
-    oss << std::put_time(&tm, "%Y-%m-%d%20%H:%M:%S");
-    log("CURRENT TIME: " + oss.str().substr(0, 10) + ", " + oss.str().substr(13, 21) + " UT");
-    oss_end << std::put_time(&tm_end, "%Y-%m-%d%20%H:%M:%S");
+    // Get current time, +0 seconds ahead and +60 seconds ahead.
+    std::tm start_time = getCurrentUTC(0);
+    std::tm end_time = getCurrentUTC(60);
+
+    // "%20" represents a space character for our API query string
+    std::ostringstream start_time_oss;
+    start_time_oss << std::put_time(&start_time, "%Y-%m-%d%20%H:%M:%S");
+    std::ostringstream end_time_oss;
+    end_time_oss << std::put_time(&end_time, "%Y-%m-%d%20%H:%M:%S");
+
+    log("CURRENT TIME: " + start_time_oss.str().substr(0, 10) + ", " + start_time_oss.str().substr(13, 21) + " UT");
 
     // Set query string parameters and construct the string
-    query_string.start_time = oss.str();
-    query_string.stop_time = oss_end.str();
+    query_string.start_time = start_time_oss.str();
+    query_string.stop_time = end_time_oss.str();
     query_string.planet = planet;
     query_string.constructQueryString();
     log("\nQUERY STRING: " + query_string.link + "\n");
@@ -159,6 +148,7 @@ equat_coord getPlanetPosition(const std::string &planet)
 
     float degrees = final_coordinates.declination = std::stof(celestial_data.substr(38, 40));
     float sign = (degrees < 0) ? -1 : 1;
+    
     float minutes = final_coordinates.declination = std::stof(celestial_data.substr(41, 42));
     float seconds = final_coordinates.declination = std::stof(celestial_data.substr(44, 47));
     final_coordinates.declination = sign * (abs(degrees) + minutes / 60.0f + seconds / 3600.0f);
@@ -176,6 +166,17 @@ equat_coord getPlanetPosition(const std::string &planet)
     return final_coordinates;
 }
 
+std::tm getCurrentUTC(const int &offset)
+{
+    auto now = std::chrono::system_clock::now();
+    // Convert to time_t object
+    std::time_t time = std::chrono::system_clock::to_time_t(now);
+    time += offset;
+    // Convert to tm struct, in UTC time.
+    std::tm tm = *std::gmtime(&time);
+    return tm;
+}
+
 float getGMST()
 {
     log("\nOBTAINING GMST ...");
@@ -183,13 +184,7 @@ float getGMST()
     std::string usno_response;
 
     log("GETTING CURRENT TIME ...");
-    // Obtain the current time as "YYYY-MM-DD HH:MM:SS" for the API:
-    // Get the local time
-    auto now = std::chrono::system_clock::now();
-    // Convert to time_t object
-    std::time_t time = std::chrono::system_clock::to_time_t(now);
-    // Convert to tm struct, in UTC time.
-    std::tm tm = *std::gmtime(&time);
+    std::tm tm = getCurrentUTC(0);
 
     // String streams for our date and time
     std::ostringstream oss_date, oss_time;
@@ -236,10 +231,6 @@ float getGMST()
     log("CURRENT GMST: " + gmst);
 
     return (15.0f * hours + minutes / 4.0f + seconds / 240.0f);
-}
-
-std::string getCurrentDateAndTime()
-{
 }
 
 // For timing
