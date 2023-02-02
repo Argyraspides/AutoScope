@@ -2,18 +2,84 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-#define log(x) std::cout << x << std::endl
-using namespace std::chrono;
+#define log(x) std::cout << x << "\n"
 
 void track();
-void focusPlanet();
+void focusPlanet(const std::string &planet);
 equat_coord getPlanetPosition(const std::string &planet);
 float getGMST();
 
+// Frequency of tracking an object, given in milliseconds.
+const int tracking_frequency = 20000;
+
 int main()
 {
-    equat_coord c = getPlanetPosition(SATURN);
-    float x = getGMST();
+
+    bool running = true;
+    while (running)
+    {
+    restart:
+        std::string planet;
+        std::cout << "ENTER TARGET PLANET. CODES:\n"
+                     "1 - MERCURY\n"
+                     "2 - VENUS\n"
+                     "4 - MARS\n"
+                     "5 - JUPITER\n"
+                     "6 - SATURN\n"
+                     "7 - URANUS\n"
+                     "8 - NEPTUNE\n"
+                     "10 - MOON\n";
+        std::cin >> planet;
+
+        bool valid_planet = false;
+        for (int i = 0; i < 11; i++)
+        {
+            if (planet == std::to_string(i))
+            {
+                valid_planet = true;
+                break;
+            }
+        }
+
+        if (valid_planet)
+        {
+            log("STARTING ...");
+
+            equat_coord planet_position = getPlanetPosition(planet);
+            // Get the current Greenwich Mean Sidereal Time.
+            float gmst = getGMST();
+            // gps_coord gps_coord = getGPSCoord();
+            gps_coord gps_coord;
+            // Temporary coordinates for Kathmandu, Nepal.
+            gps_coord.latitude = 27.7172;
+            gps_coord.longitude = 85.3240;
+            // Move the telescope towards the planet.
+            focusPlanet(planet);
+
+            while (true)
+            {
+                // Continue tracking the planet
+                log("FOCUSSING ... ENTER 'C' TO EXIT AND SELECT ANOTHER PLANET, OR 'X' TO FOCUS THE PLANET AGAIN");
+                char inp;
+                std::cin >> inp;
+                if (inp == 'C' || inp == 'c')
+                {
+                    std::cin.clear();
+                    break;
+                }
+                else if (inp == 'X' || inp == 'x')
+                {
+                    focusPlanet(planet);
+                    std::cin.clear();
+                }
+            }
+        }
+        else
+        {
+            log("ERROR: INVALID INPUT");
+            goto restart;
+        }
+    }
 }
 
 void track()
@@ -133,6 +199,8 @@ float getGMST()
 
     query_string.constructQueryString();
 
+    log("\nQUERY STRING: " + query_string.link + "\n");
+
     // USNO Returns as a JSON, so we configure curlpp to take json replies
     log("REQUESTING USNO API ...");
     curlpp::Easy request;
@@ -171,7 +239,7 @@ std::string getCurrentDateAndTime()
 }
 
 // For timing
-//  auto start = high_resolution_clock::now();
-//  auto stop = high_resolution_clock::now();
-//  auto duration = duration_cast<microseconds>(stop - start);
+//  auto start = std::chrono::high_resolution_clock::now();
+//  auto stop = std::chrono::high_resolution_clock::now();
+//  auto duration = std::chrono::duration_cast<microseconds>(stop - start);
 //  std::cout << duration.count() << "\n";
