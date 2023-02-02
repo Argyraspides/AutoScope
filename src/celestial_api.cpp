@@ -53,6 +53,8 @@ int main()
             // Temporary coordinates for Kathmandu, Nepal.
             gps_coord.latitude = 27.7172;
             gps_coord.longitude = 85.3240;
+            // Get horizontal coordinates
+            horiz_coord horiz_coord = equatToHoriz(planet_position, gps_coord, gmst, 0.0f);
             // Move the telescope towards the planet.
             focusPlanet(planet);
 
