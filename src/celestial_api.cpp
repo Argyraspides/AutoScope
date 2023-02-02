@@ -45,17 +45,6 @@ int main()
         {
             log("STARTING ...");
 
-            equat_coord planet_position = getPlanetPosition(planet);
-            // Get the current Greenwich Mean Sidereal Time.
-            float gmst = getGMST();
-            // gps_coord gps_coord = getGPSCoord();
-            gps_coord gps_coord;
-            // Temporary coordinates for Kathmandu, Nepal.
-            gps_coord.latitude = 27.7172;
-            gps_coord.longitude = 85.3240;
-            // Get horizontal coordinates
-            horiz_coord horiz_coord = equatToHoriz(planet_position, gps_coord, gmst, 0.0f);
-            // Move the telescope towards the planet.
             focusPlanet(planet);
 
             while (true)
@@ -66,15 +55,14 @@ int main()
                 std::cin >> inp;
                 if (inp == 'C' || inp == 'c')
                 {
-                    std::cin.clear();
                     break;
                 }
                 else if (inp == 'X' || inp == 'x')
                 {
                     focusPlanet(planet);
-                    std::cin.clear();
                 }
             }
+            std::cin.clear();
         }
         else
         {
@@ -84,12 +72,26 @@ int main()
     }
 }
 
-void track()
+void moveScope(const horiz_coord &horiz_coord)
 {
 }
 
 void focusPlanet(const std::string &planet)
 {
+
+    // THIS SHOULD GO INTO THE "FOCUS PLANET" MODULE.
+    equat_coord planet_position = getPlanetPosition(planet);
+    // Get the current Greenwich Mean Sidereal Time.
+    float gmst = getGMST();
+    // gps_coord gps_coord = getGPSCoord();
+    gps_coord gps_coord;
+    // Temporary coordinates for Kathmandu, Nepal.
+    gps_coord.latitude = 27.7172;
+    gps_coord.longitude = 85.3240;
+    // Get horizontal coordinates
+    horiz_coord horiz_coord = equatToHoriz(planet_position, gps_coord, gmst, 0.0f);
+    // Move the telescope towards the planet.
+    moveScope(horiz_coord);
 }
 
 equat_coord getPlanetPosition(const std::string &planet)
