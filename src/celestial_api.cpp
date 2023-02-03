@@ -75,13 +75,14 @@ void focusPlanet(const std::string &planet)
 
     // THIS SHOULD GO INTO THE "FOCUS PLANET" MODULE.
     equat_coord planet_position = getPlanetPosition(planet);
+
     // Get the current Greenwich Mean Sidereal Time.
     float gmst = getGMST();
     // gps_coord gps_coord = getGPSCoord();
     gps_coord gps_coord;
-    // Temporary coordinates for Kathmandu, Nepal.
-    gps_coord.latitude = 27.7172;
-    gps_coord.longitude = 85.3240;
+    // Temporary coordinates for Auckland, NZ
+    gps_coord.latitude = -36.8509;
+    gps_coord.longitude = 174.7645;
     // Get horizontal coordinates
     horiz_coord horiz_coord = equatToHoriz(planet_position, gps_coord, gmst, 0.0f);
     // Move the telescope towards the planet.
@@ -91,7 +92,6 @@ void focusPlanet(const std::string &planet)
 // Tracks the current planet across its diurnal path in the sky
 void track()
 {
-
 }
 
 // Obvious enough. Returns in equatorial coordinates (Right Ascension and Declination)
@@ -157,7 +157,7 @@ equat_coord getPlanetPosition(const std::string &planet)
 
     float degrees = final_coordinates.declination = std::stof(celestial_data.substr(38, 40));
     float sign = (degrees < 0) ? -1 : 1;
-    
+
     float minutes = final_coordinates.declination = std::stof(celestial_data.substr(41, 42));
     float seconds = final_coordinates.declination = std::stof(celestial_data.substr(44, 47));
     final_coordinates.declination = sign * (abs(degrees) + minutes / 60.0f + seconds / 3600.0f);
@@ -233,13 +233,13 @@ float getGMST()
     std::string gmst = json_response["properties"]["data"][0]["gmst"].asString();
 
     // Return GMST in degrees.
-    float hours = std::stof(gmst.substr(0, 1));
+    float hours = std::stof(gmst.substr(0, 2));
     float minutes = std::stof(gmst.substr(3, 4));
     float seconds = std::stof(gmst.substr(6, 10));
     log("GMST RETRIEVAL COMPLETE");
     log("CURRENT GMST: " + gmst);
 
-    return (15.0f * hours + minutes / 4.0f + seconds / 240.0f);
+    return (hours + minutes / 60.0f + seconds / 3600) * 15.0f;
 }
 
 // For timing
