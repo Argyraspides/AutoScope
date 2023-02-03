@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 
+// Equatorial Coordinates
 struct equat_coord
 {
     // Given as Hours:Minutes:Seconds
@@ -10,6 +11,7 @@ struct equat_coord
     float declination = 0.0f;
     float right_ascension_degrees = 0;
 
+    // Updates the right ascension in degrees 
     void update()
     {
         right_ascension_degrees =
@@ -17,17 +19,20 @@ struct equat_coord
     }
 };
 
+// Horizontal coordinates
 struct horiz_coord
 {
     float altitude = 0.0f;
     float azimuth = 0;
 };
 
+// GPS coordinates
 struct gps_coord
 {
     float latitude = 0.0f, longitude = 0.0f;
 };
 
+// Converts from equatorial to horizontal coordinates.
 horiz_coord equatToHoriz(
     const equat_coord &eq_coo,
     const gps_coord &gps_coo,

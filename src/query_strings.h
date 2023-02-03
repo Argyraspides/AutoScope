@@ -2,6 +2,8 @@
 #define query_strings_h
 #include <string>
 #include <vector>
+
+// The query string containing parameters for NASA's JPL Horizons API for planetary positional data.
 struct horizons_query_string
 {
     int step_size = 20;
@@ -12,12 +14,11 @@ struct horizons_query_string
     std::string center = "3";                 // Planet from which to take the center of the coordinate system
     std::string reference_plane = "ECLIPTIC"; // Type of reference plane
     std::string coord_type = "CYLINDRICAL";   // Type of coordinate system to use
-    std::string start_time = "2023-01-01";
+    std::string start_time = "2023-01-01";    // Start and stop times for positional data
     std::string stop_time = "2023-01-02";
-    std::string quantities = "1," + std::to_string(step_size); // Number of measurements to be returned from between start
-    // and end time. E.g. If start->stop was 24 hours, quantities was "1,24", then 24 measurements would be given back,
-    // i.e. the positional data once per hour.
+    std::string quantities = "1," + std::to_string(step_size);
 
+    // Takes all parameters and creates the final query string for the API.
     void constructQueryString()
     {
 
@@ -39,9 +40,12 @@ struct horizons_query_string
     }
 };
 
+// The query string containing parameters for the US Navl Observatory (USNO) API to recieve the current Greenwich Mean Sidereal Time.
+// GMST returned here accounts for Earth's precession.
 struct usno_query_string
 {
-    std::vector<std::string> keyWords = {"date=", "coords=", "reps=", "intv_mag=", "intv_unit=", "time="};
+
+    // Parameters for the USNO API.
     std::string startDate = "2020-03-04";
     std::string coords = "41.89,12.48";
     std::string increments = "1";
@@ -49,9 +53,11 @@ struct usno_query_string
     std::string incrementUnits = "minutes";
     std::string startTime = "21:00:00";
 
+    // The "base" link for the API
     std::string link =
         "https://aa.usno.navy.mil/api/siderealtime?";
 
+    // Takes all parameters and creates the final query string for the API.
     void constructQueryString()
     {
 

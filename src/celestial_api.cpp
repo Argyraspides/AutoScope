@@ -64,10 +64,12 @@ int main()
     }
 }
 
+// Sends control to motors to orient the telescope
 void moveScope(const horiz_coord &horiz_coord)
 {
 }
 
+// Orients the telescope to point at the desired planet
 void focusPlanet(const std::string &planet)
 {
 
@@ -86,6 +88,13 @@ void focusPlanet(const std::string &planet)
     moveScope(horiz_coord);
 }
 
+// Tracks the current planet across its diurnal path in the sky
+void track()
+{
+
+}
+
+// Obvious enough. Returns in equatorial coordinates (Right Ascension and Declination)
 equat_coord getPlanetPosition(const std::string &planet)
 {
 
@@ -166,17 +175,17 @@ equat_coord getPlanetPosition(const std::string &planet)
     return final_coordinates;
 }
 
+// Obtains the current UTC + "offset" seconds ahead. E.g. offset = 60 gives back UTC time one minute ahead of now.
 std::tm getCurrentUTC(const int &offset)
 {
     auto now = std::chrono::system_clock::now();
     // Convert to time_t object
     std::time_t time = std::chrono::system_clock::to_time_t(now);
     time += offset;
-    // Convert to tm struct, in UTC time.
-    std::tm tm = *std::gmtime(&time);
-    return tm;
+    return *std::gmtime(&time);
 }
 
+// Obtains the current Greenwich Mean Sidereal Time from the USNO API. Accounts for Earth's precession.
 float getGMST()
 {
     log("\nOBTAINING GMST ...");
