@@ -50,10 +50,10 @@ horiz_coord equatToHoriz(
             cos(eq_coo.declination * PI / 180.0f) * cos(gps_coo.latitude * PI / 180.0f) * cos(hour_angle * PI / 180.0f));
 
     float azimuth =
-        atan2(sin(hour_angle * PI / 180.0f),
-              cos(eq_coo.declination * PI / 180.0f) * cos(gps_coo.latitude * PI / 180.0f) - sin(eq_coo.declination * PI / 180.0f) * sin(gps_coo.latitude * PI / 180.0f) * cos(hour_angle * PI / 180.0f));
-
-    azimuth = fmod((azimuth + 2 * PI), (2 * PI));
+        atan2(
+            -sin(hour_angle * PI / 180.0f) * cos(eq_coo.declination * PI / 180.0f) * cos(gps_coo.latitude * PI / 180.0f),
+            sin(eq_coo.declination * PI / 180.0f) - sin(gps_coo.latitude * PI / 180.0f) * sin(altitude * PI / 180.0f)) +
+        180;
 
     // Our correction factor for elevation above sea level
     float local_hour_angle = GMST + gps_coo.longitude - eq_coo.right_ascension_degrees;
