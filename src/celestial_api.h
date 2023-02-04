@@ -45,7 +45,20 @@ std::vector<std::string> horizons_planet_codes =
 
 std::vector<std::string> ned_body_codes =
     {
-        "m31" // Andromeda Galaxy
+        "m31",  // Andromeda Galaxy
+        "m51",  // Whirlpool Galaxy
+        "m101", // Pinwheel Galaxy
+        "m104", // Sombrero Galaxy
+        "m64",  // Black Eye Galaxy
+        "m1",   // Crab Nebula
+        "m27",  // Dumbbell Nebula
+        "m33",  // Triangulum Galaxy
+        "m42",  // Great Orion Nebula
+        "m57",  // Ring Nebula
+        "m74",  // Phantom Galaxy
+        "m97",  // Owl Nebula
+        "m78",  // Casper the Friendly Ghost Nebula
+        "m8"    // Lagoon Nebula
 };
 
 std::map<std::string, int> horizons_map;

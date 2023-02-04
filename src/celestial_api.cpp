@@ -39,7 +39,7 @@ int main()
             while (true)
             {
                 // Continue tracking the planet
-                log("FOCUSSING ... ENTER 'C' TO EXIT AND SELECT ANOTHER PLANET, OR 'X' TO FOCUS THE PLANET AGAIN");
+                log("FOCUSSING ... ENTER 'C' TO EXIT AND SELECT ANOTHER BODY, OR 'X' TO FOCUS THE PLANET AGAIN");
                 char inp;
                 std::cin >> inp;
                 if (inp == 'C' || inp == 'c')
