@@ -33,42 +33,43 @@ struct gps_coord
     float latitude = 0.0f, longitude = 0.0f;
 };
 
-// Converts from equatorial to horizontal coordinates.
+// Converts from equatorial to horizontal coordinates, accounting for observers elevation above sea level.
 horiz_coord equatToHoriz(
-    const equat_coord &eq_coo,
-    const gps_coord &gps_coo,
-    const float &GMST,
+    equat_coord &eq_coo,
+    gps_coord &gps_coo,
+    float &GMST,
     const float &elevation)
 {
     // GMST given in degrees
     float local_sidereal_time = GMST + gps_coo.longitude;
     local_sidereal_time = fmod(local_sidereal_time, 360);
+
     float hour_angle = local_sidereal_time - eq_coo.right_ascension_degrees;
 
     if (hour_angle < 0)
         hour_angle += 360;
 
+    // temporarily convert our coordinate values to radians.
+    float conv = PI / 180.0f;
+    eq_coo.declination *= conv;
+    gps_coo.latitude *= conv;
+    hour_angle *= conv;
+
     float altitude =
         asin(
-            sin(eq_coo.declination * (PI / 180.0f)) * sin(gps_coo.latitude * (PI / 180.0f)) +
-            cos(eq_coo.declination * (PI / 180.0f)) * cos(gps_coo.latitude * (PI / 180.0f)) * cos(hour_angle * (PI / 180.0f)));
+            sin(eq_coo.declination) * sin(gps_coo.latitude) +
+            cos(eq_coo.declination) * cos(gps_coo.latitude) * cos(hour_angle));
+    // Convert to degrees
     altitude *= (180.0f / PI);
 
     float azimuth = atan2(
-                        sin(hour_angle * (PI / 180.0f)),
-                        cos(hour_angle * (PI / 180.0f)) * sin(gps_coo.latitude * (PI / 180.0f)) - tan(eq_coo.declination * (PI / 180.0f)) * cos(gps_coo.latitude * (PI / 180.0f))) *
-                    (180 / PI);
+                        sin(hour_angle),
+                        cos(hour_angle) * sin(gps_coo.latitude ) - tan(eq_coo.declination) * cos(gps_coo.latitude));
 
+    // We get an output of -180 to 180 with atan2, to get 0 to 360 as azimuth normally is, simply add 180 after
+    // converting to degrees.
+    azimuth *= (180.0f / PI);
     azimuth += 180;
-
-    // Our correction factor for elevation above sea level
-    float local_hour_angle = GMST + gps_coo.longitude - eq_coo.right_ascension_degrees;
-    float correction_factor =
-        1.0f / (cos(elevation) * cos(gps_coo.latitude * PI / 180.0f) * cos(local_hour_angle * PI / 180.0f) +
-                sin(gps_coo.latitude * PI / 180.0f) * sin(eq_coo.declination * PI / 180.0f));
-
-    // altitude *= correction_factor;
-    // azimuth *= correction_factor;
 
     horiz_coord horizontal_coordinates;
     horizontal_coordinates.altitude = altitude;

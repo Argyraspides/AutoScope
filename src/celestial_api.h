@@ -25,11 +25,41 @@
 #define PLUTO "9"
 #define MOON "10"
 
+enum body_type
+{
+    planet,
+    extra_solar
+};
+
+std::vector<std::string> horizons_planet_codes =
+    {
+        "199", // Mercury
+        "299", // Venus
+        "499", // Mars
+        "599", // Jupiter
+        "699", // Saturn
+        "799", // Uranus
+        "899", // Neptune
+        "999", // Pluto
+};
+
+std::vector<std::string> ned_body_codes =
+    {
+        "m31" // Andromeda Galaxy
+};
+
+std::map<std::string, int> horizons_map;
+std::map<std::string, int> ned_map;
+
 void track();
+void initializeMaps();
 void focusPlanet(const std::string &planet);
 void moveScope(const horiz_coord &horiz_coord);
+void focusBody(const std::string &body, const body_type &body_type);
 
 float getGMST();
 
 equat_coord getPlanetPosition(const std::string &planet);
-std::tm getCurrentUTC (const int &offset);
+equat_coord getExtrasolarBodyPosition(const std::string &extrasolar_body);
+
+std::tm getCurrentUTC(const int &offset);

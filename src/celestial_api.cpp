@@ -6,38 +6,35 @@ const int tracking_frequency = 20000;
 
 int main()
 {
-
+    // Initialize the database for planetary codes and extrasolar object codes
+    initializeMaps();
     bool running = true;
     while (running)
     {
     restart:
-        std::string planet;
-        std::cout << "ENTER TARGET PLANET. CODES:\n"
-                     "1 - MERCURY\n"
-                     "2 - VENUS\n"
-                     "4 - MARS\n"
-                     "5 - JUPITER\n"
-                     "6 - SATURN\n"
-                     "7 - URANUS\n"
-                     "8 - NEPTUNE\n"
-                     "10 - MOON\n";
-        std::cin >> planet;
+        std::string body;
+        body_type body_type;
+        log("ENTER TARGET BODY");
+        std::cin >> body;
 
-        bool valid_planet = false;
-        for (int i = 0; i < 11; i++)
+        bool valid_body = false;
+
+        if (horizons_map.count(body) > 0)
         {
-            if (planet == std::to_string(i))
-            {
-                valid_planet = true;
-                break;
-            }
+            valid_body = true;
+            body_type = body_type::planet;
+        }
+        else if (ned_map.count(body) > 0)
+        {
+            valid_body = true;
+            body_type = body_type::extra_solar;
         }
 
-        if (valid_planet)
+        if (valid_body)
         {
             log("STARTING ...");
 
-            focusPlanet(planet);
+            focusBody(body, body_type);
 
             while (true)
             {
@@ -51,7 +48,7 @@ int main()
                 }
                 else if (inp == 'X' || inp == 'x')
                 {
-                    focusPlanet(planet);
+                    focusBody(body, body_type);
                 }
             }
             std::cin.clear();
@@ -70,11 +67,13 @@ void moveScope(const horiz_coord &horiz_coord)
 }
 
 // Orients the telescope to point at the desired planet
-void focusPlanet(const std::string &planet)
+void focusBody(const std::string &body, const body_type &body_type)
 {
-
-    // THIS SHOULD GO INTO THE "FOCUS PLANET" MODULE.
-    equat_coord planet_position = getPlanetPosition(planet);
+    equat_coord body_position;
+    if (body_type == body_type::planet)
+        body_position = getPlanetPosition(body);
+    else if (body_type == body_type::extra_solar)
+        body_position = getExtrasolarBodyPosition(body);
 
     // Get the current Greenwich Mean Sidereal Time.
     float gmst = getGMST();
@@ -84,7 +83,7 @@ void focusPlanet(const std::string &planet)
     gps_coord.latitude = -36.8509;
     gps_coord.longitude = 174.7645;
     // Get horizontal coordinates
-    horiz_coord horiz_coord = equatToHoriz(planet_position, gps_coord, gmst, 0.0f);
+    horiz_coord horiz_coord = equatToHoriz(body_position, gps_coord, gmst, 0.0f);
     // Move the telescope towards the planet.
     moveScope(horiz_coord);
 }
@@ -175,6 +174,37 @@ equat_coord getPlanetPosition(const std::string &planet)
     return final_coordinates;
 }
 
+// Returns equatorial coordinates about a target body outside of the solar system. Returns in equatorial coordinates (Right Ascension and Declination)
+// Utilizes NASA's NED API.
+equat_coord getExtrasolarBodyPosition(const std::string &extrasolar_body)
+{
+
+    ned_query_string query_string;
+    equat_coord final_coordinates;
+
+    std::ostringstream ned_response;
+
+    query_string.body_name = extrasolar_body;
+    query_string.constructQueryString();
+    ned_response << curlpp::options::Url(query_string.link);
+    log("NED RESPONSE: \n" + ned_response.str());
+
+    Json::Value json_response;
+    Json::Reader reader;
+    // Parse API response to json object.
+    reader.parse(ned_response.str(), json_response);
+
+    // Extract right ascension and declination from API response.
+    std::string right_ascension = json_response["Preferred"]["Position"]["RA"].asString();
+    std::string declination = json_response["Preferred"]["Position"]["Dec"].asString();
+
+    // The API returns results already converting R.A. into degrees.
+    final_coordinates.declination = std::stof(declination);
+    final_coordinates.right_ascension_degrees = std::stof(right_ascension);
+
+    return final_coordinates;
+}
+
 // Obtains the current UTC + "offset" seconds ahead. E.g. offset = 60 gives back UTC time one minute ahead of now.
 std::tm getCurrentUTC(const int &offset)
 {
@@ -242,6 +272,18 @@ float getGMST()
     return (hours + minutes / 60.0f + seconds / 3600) * 15.0f;
 }
 
+void initializeMaps()
+{
+    for (int i = 0; i < horizons_planet_codes.size(); i++)
+    {
+        horizons_map[horizons_planet_codes[i]] = i;
+    }
+
+    for (int i = 0; i < ned_body_codes.size(); i++)
+    {
+        ned_map[ned_body_codes[i]] = i;
+    }
+}
 // For timing
 //  auto start = std::chrono::high_resolution_clock::now();
 //  auto stop = std::chrono::high_resolution_clock::now();

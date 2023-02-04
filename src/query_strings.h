@@ -75,4 +75,19 @@ struct usno_query_string
         }
     }
 };
+
+// The query string for NASA's NED API. Gives us RA and Dec for any object outside of the solar system.
+struct ned_query_string 
+{
+    int step_size = 20;
+    // Horizons API "base" link
+    std::string link = "https://ned.ipac.caltech.edu/srs/ObjectLookup?name=";
+    std::string body_name = "m31"; // Default target body name is the Andromeda Galaxy.
+
+    void constructQueryString()
+    {
+        link = (link += body_name);
+    }
+};
+
 #endif
