@@ -84,6 +84,7 @@ void focusBody(const std::string &body, const body_type &body_type)
     gps_coord.longitude = 174.7645;
     // Get horizontal coordinates
     horiz_coord horiz_coord = equatToHoriz(body_position, gps_coord, gmst, 0.0f);
+    log("ALT: " + std::to_string(horiz_coord.altitude) + " AZ: " + std::to_string(horiz_coord.azimuth));
     // Move the telescope towards the planet.
     moveScope(horiz_coord);
 }
@@ -179,6 +180,7 @@ equat_coord getPlanetPosition(const std::string &planet)
 equat_coord getExtrasolarBodyPosition(const std::string &extrasolar_body)
 {
 
+    log("GETTING EXTRASOLAR OBJECT POSITION ... ");
     ned_query_string query_string;
     equat_coord final_coordinates;
 
@@ -192,6 +194,7 @@ equat_coord getExtrasolarBodyPosition(const std::string &extrasolar_body)
     Json::Value json_response;
     Json::Reader reader;
     // Parse API response to json object.
+    log("RESPONSE SUCCESSFUL ... PARSING DATA");
     reader.parse(ned_response.str(), json_response);
 
     // Extract right ascension and declination from API response.
@@ -201,6 +204,9 @@ equat_coord getExtrasolarBodyPosition(const std::string &extrasolar_body)
     // The API returns results already converting R.A. into degrees.
     final_coordinates.declination = std::stof(declination);
     final_coordinates.right_ascension_degrees = std::stof(right_ascension);
+
+    log("COMPLETE");
+    log("COORDINATES: RA: " + right_ascension + " Dec: " + declination);
 
     return final_coordinates;
 }
