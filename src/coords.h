@@ -23,8 +23,7 @@ struct equat_coord
 // Horizontal coordinates
 struct horiz_coord
 {
-    float altitude = 0.0f;
-    float azimuth = 0;
+    float altitude = 0.0f, azimuth = 0.0f;
 };
 
 // GPS coordinates
@@ -63,13 +62,19 @@ horiz_coord equatToHoriz(
     altitude *= (180.0f / PI);
 
     float azimuth = atan2(
-                        sin(hour_angle),
-                        cos(hour_angle) * sin(gps_coo.latitude ) - tan(eq_coo.declination) * cos(gps_coo.latitude));
+        sin(hour_angle),
+        cos(hour_angle) * sin(gps_coo.latitude) - tan(eq_coo.declination) * cos(gps_coo.latitude));
 
     // We get an output of -180 to 180 with atan2, to get 0 to 360 as azimuth normally is, simply add 180 after
     // converting to degrees.
     azimuth *= (180.0f / PI);
     azimuth += 180;
+
+    // Convert values back to degrees
+    float inv_conv = (1.0f / conv);
+    eq_coo.declination *= inv_conv;
+    gps_coo.latitude *= inv_conv;
+    hour_angle *= inv_conv;
 
     horiz_coord horizontal_coordinates;
     horizontal_coordinates.altitude = altitude;
